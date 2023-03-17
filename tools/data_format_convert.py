@@ -1,9 +1,10 @@
+#-*- coding:utf-8 -*-
+
 import os
 import os.path as osp
 import json
 import cv2 as cv
 import numpy as np
-from glob import glob
 from tqdm import tqdm
 import argparse
 
@@ -39,28 +40,30 @@ def attribute_map(attr_list):
         else:
             new_name_list.append(pos_name)
     
-    return new_name_list
+    new_name_str = ";".join(new_name_list)
+    
+    return new_name_str
 
 
 def labelme_formated(data_list, imgshape):
     print(f"==========> The face number of the img: {len(data_list)}")
     shapes = []
-    for data in tqdm(data_list):
+    for data in data_list:
         for point in data[0]:
-            shape = {
+            shape_point = {
                 "label": "face",
                 "points": point,
                 "shape_type": "point"
             }
-            shapes.append(shape)
+            shapes.append(shape_point)
         attribute = attribute_map(data[-1])
-        shape = {
+        shape_rect = {
                 "label": "face",
                 "points": data[1],
                 "attribute": attribute,
                 "shape_type": "rectangle",
         }
-        shapes.append()
+        shapes.append(shape_rect)
     labelme = {
         "shapes": shapes,
         "imageWidth": imgshape[0],
@@ -75,10 +78,10 @@ def list2dict(txt_list):
     print("==========> convert txt list to dict:\n")
     for txt in tqdm(txt_list):
         txt_list = txt.rstrip("\n").split(" ")
-        points = np.array(txt_list[0:195]).astype(float).reshape([98, 1, 2]).tolist()
-        bbox = np.array(txt_list[195:199]).astype(float).reshape([2, 2]).tolist()
-        attribute = np.array(txt_list[199:205]).astype(int).reshape([6, 1]).tolist()
-        img_name = txt_list[-1]
+        points = np.array(txt_list[0:196]).astype(float).reshape([98, 1, 2]).tolist()
+        bbox = np.array(txt_list[196:200]).astype(float).reshape([2, 2]).tolist()
+        attribute = np.array(txt_list[200:206]).astype(int).reshape([6, 1]).tolist()
+        img_name = txt_list[206]
         if not img_name in data_info:
             data_info[img_name] = [[points, bbox, attribute]]
         else:
@@ -87,7 +90,7 @@ def list2dict(txt_list):
     return data_info
 
 
-def txt2labelme(txtfile, img_dir, save_dir):
+def txt2labelme(txt_path_list, img_dir, save_dir):
     """
         # .txt contents
         
@@ -124,26 +127,36 @@ def txt2labelme(txtfile, img_dir, save_dir):
     if not osp.exists(save_dir):
         os.makedirs(save_dir)
 
-    txt_list = read_txt(txtfile)
+    txt_list = []
+    for txt_path in txt_path_list:
+        txt_list += read_txt(txt_path)
     data_info = list2dict(txt_list)
+    cnt = 0
     for imgname, data in data_info.items():
+        cnt += 1
         img_path = osp.join(img_dir, imgname)
         img_w, img_h = image_info(img_path)
-        print(f"==========> Convert: {imgname}")
+        print(f"==========> Convert ({cnt} / {len(data_info)}) : {imgname}")
         labelme_json = labelme_formated(data, imgshape=[img_w, img_h])
-        save_path = osp.join(save_dir, imgname.replace(".jpg", ".json").replace(".png", ".json"))
+        save_path = osp.join(save_dir, osp.basename(imgname).replace(".jpg", ".json").replace(".png", ".json"))
         write_json(labelme_json, save_path)
 
 
 def get_args():
     parser = argparse.ArgumentParser(description="")
-    parser.add_argument('-f', "--txtfile", default="/dataset/xcyuan/WFLW/WFLW_annotations/list_98pt_rect_attr_train_test/list_98pt_rect_attr_test.txt", type=str, help="")
+    parser.add_argument('-t', "--txt_list", nargs="+", type=str, help="")
     parser.add_argument('-i', "--img_dir", default="/dataset/xcyuan/WFLW/WFLW_images", type=str, help="")
-    parser.add_argument('-s', "--save_dir", default="/dataset/xcyuan/WFLW/WFLW_annotations/list_98pt_rect_attr_train_test_json/test", type=str, help="")
+    parser.add_argument('-s', "--save_dir", default="/dataset/xcyuan/WFLW/WFLW_annotations/list_98pt_rect_attr_train_test_json", type=str, help="")
     args = parser.parse_args()
     
     return args
 
 
 if __name__ == "__main__":
-    pass
+    opts = get_args()
+    
+    txt_list = opts.txt_list
+    img_dir = opts.img_dir
+    save_dir = opts.save_dir
+
+    txt2labelme(txt_list, img_dir, save_dir)
