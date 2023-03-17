@@ -8,6 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
 from pfld.utils import calculate_pitch_yaw_roll
 debug = False
 
+
 def rotate(angle, center, landmark):
     rad = angle * np.pi / 180.0
     alpha = np.cos(rad)
@@ -23,6 +24,7 @@ def rotate(angle, center, landmark):
     landmark_ = np.asarray([(M[0,0]*x+M[0,1]*y+M[0,2],
                              M[1,0]*x+M[1,1]*y+M[1,2]) for (x,y) in landmark])
     return M, landmark_
+
 
 class ImageDate():
     def __init__(self, line, imgDir, image_size=112):
@@ -170,6 +172,8 @@ class ImageDate():
 
             labels.append(label)
         return labels
+
+
 def get_dataset_list(imgDir, outDir, landmarkDir, is_train):
     with open(landmarkDir,'r') as f:
         lines = f.readlines()

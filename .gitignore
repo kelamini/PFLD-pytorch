@@ -6,6 +6,16 @@ __pycache__/
 # C extensions
 *.so
 
+# pytorch
+checkpoint/
+output/
+
+# vscode
+.vscode/
+
+# datasets
+data/
+
 # Distribution / packaging
 .Python
 build/
