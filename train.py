@@ -167,7 +167,7 @@ def main(args):
 def parse_args():
     parser = argparse.ArgumentParser(description='pfld')
     # general
-    parser.add_argument('-j', '--workers', default=0, type=int)
+    parser.add_argument('-j', '--workers', default=4, type=int)
     parser.add_argument('--devices_id', default='0', type=str)  #TBD
     parser.add_argument('--test_initial', default='false', type=str2bool)  #TBD
 
@@ -181,7 +181,7 @@ def parse_args():
 
     # -- epoch
     parser.add_argument('--start_epoch', default=1, type=int)
-    parser.add_argument('--end_epoch', default=500, type=int)
+    parser.add_argument('--end_epoch', default=200, type=int)
 
     # -- snapshot、tensorboard log and checkpoint
     parser.add_argument('--snapshot',
