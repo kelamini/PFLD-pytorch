@@ -49,11 +49,12 @@ def labelme_formated(data_list, imgshape):
     print(f"==========> The face number of the img: {len(data_list)}")
     shapes = []
     for data in data_list:
-        for point in data[0]:
+        for point_index, point in enumerate(data[0]):
             shape_point = {
                 "label": "face",
                 "points": point,
-                "shape_type": "point"
+                "shape_type": "point",
+                "point_index": point_index,
             }
             shapes.append(shape_point)
         attribute = attribute_map(data[-1])
@@ -67,7 +68,7 @@ def labelme_formated(data_list, imgshape):
     labelme = {
         "shapes": shapes,
         "imageWidth": imgshape[0],
-        "imageHeight": imgshape[1]
+        "imageHeight": imgshape[1],
     }
     
     return labelme

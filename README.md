@@ -5,7 +5,7 @@ Implementation of  PFLD A Practical Facial Landmark Detector by pytorch.
 #### 1. install requirements
 
 ~~~shell
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ~~~
 
 #### 2. Datasets
@@ -20,8 +20,7 @@ pip3 install -r requirements.txt
 4. move `Mirror98.txt` to `WFLW/WFLW_annotations`
 
 ~~~shell
-$ cd data 
-$ python3 SetPreparation.py
+$ python tools/SetPreparation.py
 ~~~
 
 #### 3. training & testing
@@ -29,7 +28,7 @@ $ python3 SetPreparation.py
 training :
 
 ~~~shell
-$ python3 train.py
+$ python train.py
 ~~~
 use tensorboard, open a new terminal
 ~~~
@@ -38,7 +37,7 @@ $ tensorboard  --logdir=./checkpoint/tensorboard/
 testing:
 
 ~~~shell
-$ python3 test.py
+$ python test.py
 ~~~
 
 #### 4. results:
@@ -50,7 +49,7 @@ $ python3 test.py
 **Pytorch -> onnx**
 
 ~~~~shell
-python3 pytorch2onnx.py
+$ python tools/pytorch2onnx.py
 ~~~~
 
 **onnx -> ncnn**
